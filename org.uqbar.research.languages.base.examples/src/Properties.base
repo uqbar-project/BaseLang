@@ -1,0 +1,24 @@
+
+class AType {
+	var aString : String
+	
+	var aUnit : Unit  // FINE !
+	
+	// init
+	var unInitializedInt : Int
+	var initializedInt : Int = 23
+	
+	var initializedComplexType : ParentClass = new ParentClass
+	var initializedComplexType : ParentClass = new ParentClass  //TODO: repeated ! should not compile!
+
+	var initializedComplexTypeToChild : ParentClass = new ChildClass
+}
+
+class ParentClass {
+	
+}
+
+class ChildClass extends ParentClass {
+}
+
+// **************************

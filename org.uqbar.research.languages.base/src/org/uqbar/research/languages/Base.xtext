@@ -1,0 +1,102 @@
+grammar org.uqbar.research.languages.Base with org.eclipse.xtext.common.Terminals
+
+generate base "http://www.uqbar.org/research/languages/Base"
+
+Program:
+	classes+=Class*;
+
+Class:
+	'class' name=ID ('extends' parent=[Class])? ('{' (properties+=Property)* (methods+=Method)* '}')?;
+
+Property:
+	'var' name=ID ':' type=TypeRef ('=' value=Expression)?;
+
+Method:
+	'def' name=ID ('(' formals+=Formal (',' formals+=Formal)* ')')? ':' type=TypeRef ('=' body=Expression)?;
+
+Formal:
+	name=ID ':' type=TypeRef;
+
+Expression:
+	Assignment | BinaryExpression | '(' Expression ')' | ConstructorCall;
+
+ConstructorCall:
+	'new' classRef=ClassRef
+	('(' args+=ConstructorCallArg (',' args+=ConstructorCallArg)* ')')?;
+
+ConstructorCallArg:
+	property=[Property] '=' value=Expression;
+
+// ****************************************************************************
+// ** Assignables (variables) and referenciables (constants)
+// ****************************************************************************
+
+// There could be other referenciables not assignables (constants)
+Referenciable:
+	Assignable;
+
+Assignment:
+	variable=[Assignable] ':=' value=Expression;
+
+Assignable:
+	Property | Formal;
+
+Reference:
+	ref=[Referenciable];
+
+	// ****************************************************************************
+// ** Message Sends
+// ****************************************************************************
+BinaryExpression returns MessageSend:
+	MessageSend (=> ({BinaryExpression.receiver=current} operator=Operator) args+=Expression)?;
+
+MessageSend:
+	SimpleExpression
+	(=>
+	({MessageSend.receiver=current} '.'
+	selector=Selector
+	('(' args+=Expression (',' args+=Expression)* ')')?))*;
+
+Selector:
+	ref=[Method];
+
+SimpleExpression:
+	Literal | Reference | This;
+	
+This: 
+	variable='this'
+;
+
+	// ****************************************************************************
+// ** Literals
+// ****************************************************************************
+Literal:
+	StringLiteral | BooleanLiteral | NumberLiteral | BlockLiteral;
+
+StringLiteral:
+	literal=STRING;
+
+BooleanLiteral:
+	value=('true' | 'false');
+
+Operator:
+	'+' | '-' | '/' | '*';
+
+NumberLiteral:
+	value=INT;
+
+BlockLiteral:
+	{BlockLiteral} '{' (contents+=Expression)* '}';
+
+// ****************************************************************************
+// ** Types
+// ****************************************************************************
+TypeRef:
+	{IntType} 'Int' |
+	{StringType} 'String' |
+	{BooleanType} 'Boolean' |
+	{UnitTypeRef} 'Unit' |
+	ClassRef;
+
+ClassRef:
+	ref=[Class];

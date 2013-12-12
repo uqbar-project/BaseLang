@@ -1,0 +1,51 @@
+class AbstractClass {
+	
+	def abstractMethods : Unit
+	
+}
+
+class EntidadFinanciera {
+	var domicilio : String
+}
+
+class Banco extends EntidadFinanciera {
+	var interes : Int
+	var central : Banco
+	
+	def calcularInteres : Int = "blah"  // OK
+	def calcularInteresBien : Int = 17
+	
+	def calcularInteresConBloque : Int = { "blah" }  // OK
+	def calcularInteresBienConBloque : Int = { 17 }
+	
+	def calcularInteresCambiandoProperty : Int = {  // OK
+		interes := 23
+		"asd" 
+	}
+	
+}
+
+// ********************************
+
+class Boliche {
+	var patova : Patova
+	def quieroEntrar(p : Persona) : Unit = {
+		patova.cacheaA(p)
+	}
+}
+
+class Persona {
+	def ingresarA(boliche : Boliche) : Unit = {
+		boliche.quieroEntrar(this)
+	}
+}
+
+class Persona
+class VIP extends Persona
+
+class Patova {
+	def cacheaA(pa : Patova, p : Persona) : Unit = {
+		//.. algo
+		this.cacheaA(new Patova, new VIP)
+	}
+}

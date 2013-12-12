@@ -1,0 +1,17 @@
+class Animal {
+	int energia;
+	int getEnergia() {
+		return this.energia;
+	} 
+}
+
+class Golondrina extends Animal {
+	Golondrina volar(int metros) {
+		return new Golondrina(this.energia/*.minus(metros)*/);
+	}
+	
+	Golondrina volarHastaCansarse() {
+		return this.volar(this.energia);
+	}
+}
+

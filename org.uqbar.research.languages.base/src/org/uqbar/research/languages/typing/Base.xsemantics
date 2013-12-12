@@ -1,0 +1,245 @@
+
+system org.uqbar.research.languages.typing.BaseSemantics
+
+validatorExtends org.uqbar.research.languages.validation.AbstractBaseValidator
+
+import java.util.List
+import org.uqbar.research.languages.base.Assignable
+import org.uqbar.research.languages.base.Assignment
+import org.uqbar.research.languages.base.BaseFactory
+import org.uqbar.research.languages.base.BasePackage
+import org.uqbar.research.languages.base.BlockLiteral
+import org.uqbar.research.languages.base.BooleanLiteral
+import org.uqbar.research.languages.base.Class
+import org.uqbar.research.languages.base.ClassRef
+import org.uqbar.research.languages.base.ConstructorCall
+import org.uqbar.research.languages.base.Expression
+import org.uqbar.research.languages.base.MessageSend
+import org.uqbar.research.languages.base.Method
+import org.uqbar.research.languages.base.NumberLiteral
+import org.uqbar.research.languages.base.Property
+import org.uqbar.research.languages.base.Reference
+import org.uqbar.research.languages.base.Referenciable
+import org.uqbar.research.languages.base.StringLiteral
+import org.uqbar.research.languages.base.TypeRef
+import org.uqbar.research.languages.base.UnitTypeRef
+import it.xsemantics.runtime.RuleFailedException
+import org.uqbar.research.languages.base.This
+
+import static extension org.uqbar.research.languages.util.BaseTypeUtils.*
+
+auxiliary {
+	superclasses(Class cl) : List<Class>
+	fields(Class cl) : List<Property>
+	methods(Class cl) : List<Method>
+}
+
+judgments {
+	typeExpression |- Expression e : output TypeRef
+		error "Cannot type expression " + e.stringRep
+	assignableType ||- Referenciable referenciable: output TypeRef
+		error "Cannot compute the type of variable " + referenciable.stringRep
+		source referenciable
+	subtype |- TypeRef subtype <: TypeRef supertype
+		error subtype.stringRep + " is not a subtype of " + supertype.stringRep
+	subtypesequence |- Expression owner ~> List<Expression> expressions << List<? extends Assignable> elements
+		error "Invalid arguments for expected parameters"
+		source owner
+	assignable |- Expression expression <| TypeRef right
+		error stringRep(expression) + " is not assignable for " + stringRep(right)
+		source expression
+}
+
+// *************************************
+// ** Auxiliary definitions
+// ************************************* 
+
+auxiliary superclasses(Class cl) {
+	getAll(cl,
+		BasePackage.eINSTANCE.class_Parent,
+		BasePackage.eINSTANCE.class_Parent,
+		Class
+	)
+}
+
+auxiliary fields(Class clazz) {
+	getAll(clazz,
+		BasePackage.eINSTANCE.class_Properties,
+		BasePackage.eINSTANCE.class_Parent,
+		Property
+	)
+}
+
+auxiliary methods(Class clazz) {
+	getAll(clazz,
+		BasePackage.eINSTANCE.class_Methods,
+		BasePackage.eINSTANCE.class_Parent,
+		Method
+	)
+}
+
+// *************************************
+// ** AXIOMS
+// *************************************
+
+axiom TypeOfNumeralLiteral
+	G |- NumberLiteral num : BaseFactory.eINSTANCE.createIntType
+axiom TypeOfBooleanLiteral
+	G |- BooleanLiteral bool : BaseFactory.eINSTANCE.createBooleanType
+axiom TypeOfStringLiteral 
+	G |- StringLiteral num : BaseFactory.eINSTANCE.createStringType
+
+// *************************************
+// ** RULES
+// *************************************
+	
+
+axiom AssignableType
+	G ||- Assignable assignable : assignable.type
+
+rule ExpressionAssignableToType
+	G |- Expression expression <| TypeRef right
+from {
+	G |- expression : var TypeRef expressionType
+	G |- expressionType <: right
+}
+
+
+rule ConstructorCallType
+	G |- ConstructorCall call : call.classRef
+from {
+	call.classRef != null
+}
+
+
+// check assignment compatible types
+rule AssignmentType
+	G |- Assignment a : a.variable.type
+	error "Incompatible types for assignment. Expected " + stringRep(a.variable.type) // me gustaría que diga los tipos de ambos lados en el error :(
+from {
+	G |- a.value <| a.variable.type
+}
+
+rule TypeOfBlockLiteral
+	G |- BlockLiteral b : TypeRef theType
+from {
+	// evaluar todo
+	b.contents.forEach[l| 
+		try {
+			G |- l : var TypeRef aType
+		} 
+		catch(RuleFailedException e) { fail error e.message source l }
+	]
+	
+	{ 
+		b.contents.isEmpty
+		theType = BaseFactory.eINSTANCE.createUnitTypeRef
+	}
+	or {
+		G |- b.contents.last : theType
+	}
+}
+
+axiom TypeOfThis
+//	G |- This t : env(G, 'this', ClassRef) asi es en FJ pero acá no funca
+	G |- This t : t.containingClass.asRef
+
+rule TypeOfReference
+	G |- Reference r : TypeRef t
+from {
+	r.ref != null
+	G ||- r.ref : t
+}
+
+rule TypeOfMessageSend
+	G |- MessageSend send : send.selector.ref.type
+from {
+	G |- send.receiver : var TypeRef receiverType
+	val method = send.selector.ref
+	method != null
+	G |- send ~> send.args << method.formals
+}
+
+rule SubtypeSequence derives
+	G |- Expression owner ~> List<Expression> expressions << List<Assignable> typedElements
+from {
+	expressions.size == typedElements.size
+	or
+		fail
+			error "expected " + typedElements.size + " arguments, but got " + expressions.size
+			source owner
+	val typedElementsIterator = typedElements.iterator
+	for (exp : expressions) {
+		G |- exp <| typedElementsIterator.next.type
+	}
+}
+
+// *************************************
+// ** SUBTYPING
+// *************************************
+
+// TODO Revisar
+rule ReflexiveSubtype
+	G |- ClassRef a <: ClassRef b
+from {
+		a.ref == b.ref
+	or 
+		superclasses(a.ref).contains(b.ref)
+} 
+
+// Esta regla me gustaría que no esté.
+rule PrimitiveSubtyping
+	G |- TypeRef a <: TypeRef b
+from {
+	a.class == b.class
+}
+
+// *************************************
+// ** CHECKS
+// ************************************* 
+
+//checkrule CheckTypedElement for
+//	TypedElement te
+//from {
+//	empty ||- te : var TypeRef type
+//}
+
+// ** PROPERTIES
+
+checkrule CheckPropertyTypeCannotBeUnit for
+	Property p
+from {
+	if (p.type instanceof UnitTypeRef) { 
+		fail error "Property type cannot be Unit" source p.type
+	}
+}
+
+checkrule CheckPropertyValueType for
+	Property p
+from {
+	p.value == null
+	or {
+		empty |- p.value <| p.type
+	}
+}
+
+// ** PROPERTIES
+
+
+checkrule CheckMethodBodyType for
+	Method method
+from {
+	method.body == null  // abstract method
+	or {
+		empty |- method.body : var TypeRef bodyType  // always evaluate the body
+		empty |- method.body <| method.type
+		or {
+			method.type instanceof UnitTypeRef   // don't check if method is Unit type
+		}
+	}
+}
+
+//TODO:
+// - checkear argumentos de llamada a métodos
+// - checkear tipos de inicializaciones en llamada a constructor
+// - no debe aceptar dos properties con el mismo nombre (firma)
