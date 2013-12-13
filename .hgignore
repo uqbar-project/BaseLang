@@ -1,6 +1,7 @@
 # use glob syntax.
 syntax: glob
 
+org.uqbar.research.languages.base/.antlr-generator-3.2.0.jar
 **/*-gen/*
 **/model/generated/*
 **/bin/*
