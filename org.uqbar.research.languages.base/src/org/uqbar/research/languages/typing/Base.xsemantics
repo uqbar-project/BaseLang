@@ -27,10 +27,11 @@ import it.xsemantics.runtime.RuleFailedException
 import org.uqbar.research.languages.base.This
 
 import static extension org.uqbar.research.languages.util.BaseTypeUtils.*
+import org.uqbar.research.languages.util.BaseTypeUtils
 
 auxiliary {
 	superclasses(Class cl) : List<Class>
-	fields(Class cl) : List<Property>
+	allProperties(Class cl) : List<Property>
 	methods(Class cl) : List<Method>
 }
 
@@ -62,7 +63,7 @@ auxiliary superclasses(Class cl) {
 	)
 }
 
-auxiliary fields(Class clazz) {
+auxiliary allProperties(Class clazz) {
 	getAll(clazz,
 		BasePackage.eINSTANCE.class_Properties,
 		BasePackage.eINSTANCE.class_Parent,
@@ -198,33 +199,29 @@ from {
 // ** CHECKS
 // ************************************* 
 
-//checkrule CheckTypedElement for
-//	TypedElement te
-//from {
-//	empty ||- te : var TypeRef type
-//}
-
 // ** PROPERTIES
 
 checkrule CheckPropertyTypeCannotBeUnit for
 	Property p
 from {
-	if (p.type instanceof UnitTypeRef) { 
-		fail error "Property type cannot be Unit" source p.type
-	}
+	if (p.type instanceof UnitTypeRef) { fail error "Property type cannot be Unit" source p.type }
 }
 
 checkrule CheckPropertyValueType for
 	Property p
 from {
-	p.value == null
-	or {
-		empty |- p.value <| p.type
+	p.value == null or { empty |- p.value <| p.type }
+}
+
+checkrule CheckNoDuplicatedProperty for
+	Property property
+from {
+	if (property.containingClass.allProperties.count[p| p.name == property.name] > 1) {
+		fail error "Duplicated property" source property
 	}
 }
 
-// ** PROPERTIES
-
+// ** METHODS
 
 checkrule CheckMethodBodyType for
 	Method method
@@ -240,6 +237,4 @@ from {
 }
 
 //TODO:
-// - checkear argumentos de llamada a métodos
 // - checkear tipos de inicializaciones en llamada a constructor
-// - no debe aceptar dos properties con el mismo nombre (firma)

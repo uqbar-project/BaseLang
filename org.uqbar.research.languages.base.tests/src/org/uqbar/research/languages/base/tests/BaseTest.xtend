@@ -68,6 +68,31 @@ class BaseTest {
 	}
 	
 	@Test
+	def void testCannotHaveDuplicatedPropertyInSameClass() {
+		'''
+		class Animal {
+			var padre : Animal
+			var padre : Animal
+		}
+		'''	.parse
+			.assertErrorsFound(2)  //TODO: refinar
+	}
+	
+	@Test
+	def void testCannotHaveDuplicatedPropertyInInheritance() {
+		'''
+			class ParentClass {
+				var aProperty : String
+			}
+
+			class ChildClass extends ParentClass {
+				var aProperty : String
+			}
+		'''	.parse
+			.assertErrorsFound(1)  //TODO: refinar
+	}
+	
+	@Test
 	def void testIntPropertyWithInitializationLiteralValue() {
 		'''
 		class Animal {

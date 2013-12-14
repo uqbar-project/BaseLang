@@ -27,11 +27,11 @@ ConstructorCall:
 ConstructorCallArg:
 	property=[Property] '=' value=Expression;
 
-// ****************************************************************************
-// ** Assignables (variables) and referenciables (constants)
-// ****************************************************************************
+ // ****************************************************************************
+ // ** Assignables (variables) and referenciables (constants)
+ // ****************************************************************************
 
-// There could be other referenciables not assignables (constants)
+ // There could be other referenciables not assignables (constants)
 Referenciable:
 	Assignable;
 
@@ -44,9 +44,10 @@ Assignable:
 Reference:
 	ref=[Referenciable];
 
-	// ****************************************************************************
-// ** Message Sends
-// ****************************************************************************
+ // ****************************************************************************
+ // ** Message Sends
+ // ****************************************************************************
+
 BinaryExpression returns MessageSend:
 	MessageSend (=> ({BinaryExpression.receiver=current} operator=Operator) args+=Expression)?;
 
@@ -67,9 +68,10 @@ This:
 	variable='this'
 ;
 
-	// ****************************************************************************
-// ** Literals
-// ****************************************************************************
+ // ****************************************************************************
+ // ** Literals
+ // ****************************************************************************
+ 
 Literal:
 	StringLiteral | BooleanLiteral | NumberLiteral | BlockLiteral;
 
@@ -88,9 +90,10 @@ NumberLiteral:
 BlockLiteral:
 	{BlockLiteral} '{' (contents+=Expression)* '}';
 
-// ****************************************************************************
-// ** Types
-// ****************************************************************************
+ // ****************************************************************************
+ // ** Types
+ // ****************************************************************************
+
 TypeRef:
 	{IntType} 'Int' |
 	{StringType} 'String' |

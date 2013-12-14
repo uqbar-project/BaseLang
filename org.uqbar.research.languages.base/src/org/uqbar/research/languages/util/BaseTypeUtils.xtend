@@ -5,6 +5,7 @@ import org.uqbar.research.languages.base.BaseFactory
 import org.uqbar.research.languages.base.Class
 import org.uqbar.research.languages.base.Expression
 import org.uqbar.research.languages.base.Method
+import org.eclipse.emf.ecore.EObject
 
 class BaseTypeUtils {
 
@@ -14,11 +15,16 @@ class BaseTypeUtils {
 		type
 	}
 
-	static def getContainingClass(Expression expression) {
+	static def getContainingClass(EObject expression) {
 		EcoreUtil2.getContainerOfType(expression, Class)
 	}
 
 	static def getContainingMethod(Expression expression) {
 		EcoreUtil2.getContainerOfType(expression, Method)
 	}
+	
+	static def <T> Integer count(Iterable<T> iterable, (T) => boolean predicate) {
+		iterable.filter(predicate).size
+	}
+	
 }

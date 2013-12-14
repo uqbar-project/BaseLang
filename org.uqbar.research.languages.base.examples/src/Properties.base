@@ -2,7 +2,7 @@
 class AType {
 	var aString : String
 	
-	var aUnit : Unit  // FINE !
+	var aUnit : Unit  // OK
 	
 	// init
 	var unInitializedInt : Int
@@ -15,10 +15,11 @@ class AType {
 }
 
 class ParentClass {
-	
+	var aProperty : String
 }
 
 class ChildClass extends ParentClass {
+	var aProperty : String
 }
 
 // **************************

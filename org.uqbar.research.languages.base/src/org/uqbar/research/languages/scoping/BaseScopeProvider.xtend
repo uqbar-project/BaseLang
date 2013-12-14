@@ -36,7 +36,7 @@ class BaseScopeProvider extends AbstractDeclarativeScopeProvider {
 	}
 
 	def Iterable<Property> getAllProperties(Class cl) {
-		safeTypeSystem [fields(cl)]
+		safeTypeSystem [ allProperties(cl) ]
 	}
 
 	/**
