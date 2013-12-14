@@ -364,6 +364,36 @@ class BaseTest {
 	}
 	
 	// *****************************
+	// ** Scopes
+	// *****************************
+	
+	@Test
+	def void testScopeForAssignableInAssingmentUsingPropertyDeclaredOnTheSameClass() {
+		'''
+		class Persona {
+			var edad : Int
+			def nacer : Unit = {
+				edad := 0
+			}
+		}
+		'''	.parseExpectingNoErrors
+	}
+	
+	@Test
+	def void testScopeForAssignableInAssingmentUsingPropertyInheritedFromSuperClass() {
+		'''
+		class Animal {
+			var energia : Int
+		}
+		class Golondrina extends Animal {
+			def volar(metros: Int) : Unit = {
+				energia := 23
+			}
+		}
+		'''	.parseExpectingNoErrors
+	}
+	
+	// *****************************
 	// ** Helpers
 	// *****************************
 	

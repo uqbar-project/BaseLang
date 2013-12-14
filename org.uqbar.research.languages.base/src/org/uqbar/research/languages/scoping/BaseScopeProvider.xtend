@@ -14,6 +14,8 @@ import org.uqbar.research.languages.base.Reference
 import org.uqbar.research.languages.typing.BaseSemantics
 
 import static extension org.uqbar.research.languages.util.BaseTypeUtils.*
+import org.eclipse.emf.ecore.EObject
+import org.uqbar.research.languages.base.Assignment
 
 /**
  * This class contains custom scoping description.
@@ -27,10 +29,19 @@ class BaseScopeProvider extends AbstractDeclarativeScopeProvider {
 	BaseSemantics semantics
 
 	def IScope scope_Referenciable(Reference reference, EReference ref) {
-		var propertiesScope = Scopes.scopeFor(reference.containingClass.allProperties)
-		Scopes.scopeFor(reference.containingMethod.formals, propertiesScope)
+		reference.containingClass.allProperties.asScope + reference.containingMethod.formals.asScope
 	}
+	
+	def IScope scope_Assignable(Assignment assignment, EReference ref) {
+		assignment.containingClass.allProperties.asScope
+	}
+	
 
+
+	// *****************************
+	// ** Helpers
+	// *****************************
+	
 	def getExpressionType(Expression receiver) {
 		semantics.typeExpression(receiver.environment, receiver).value
 	}
@@ -64,5 +75,16 @@ class BaseScopeProvider extends AbstractDeclarativeScopeProvider {
 			null
 		}
 	}
+	
+	// *****************************************
+	// ** extension methods 
+	// *****************************************
 
+	def operator_plus(IScope outer, IScope inner) {
+		Scopes.scopeFor(inner.allElements.map[e| e.EObjectOrProxy], outer)
+	}
+	
+	def asScope(Iterable<? extends EObject> elements) {
+		Scopes.scopeFor(elements)
+	}
 }

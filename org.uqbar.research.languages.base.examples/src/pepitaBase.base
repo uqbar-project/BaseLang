@@ -1,5 +1,5 @@
 class Animal {
-	var energia: Int
+	var energia : Int
 	
 	def getEnergia : Int = energia
 	
@@ -9,19 +9,11 @@ class Golondrina extends Animal {
 	var padre : Golondrina = new Golondrina
 	
 	def volar(metros: Int) : Unit = {
-		// energia := energia - metros
+		energia := 23
 	}
 
-	def volarHastaCansarse : Unit = /* this.volar(energia) */ {}
+	def volarHastaCansarse : Unit = this.volar(energia)
 	
-	def clonar : Golondrina = new Perro 
-
-	def setPadre(nueva : Int) : Int = {
-		padre := new Animal
-		"3"
-	}
+	def clonar : Golondrina = new Golondrina
 
 }
-
-class Perro
-
