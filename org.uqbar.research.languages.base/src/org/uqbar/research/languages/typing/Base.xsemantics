@@ -28,6 +28,7 @@ import org.uqbar.research.languages.base.This
 
 import static extension org.uqbar.research.languages.util.BaseTypeUtils.*
 import org.uqbar.research.languages.util.BaseTypeUtils
+import org.uqbar.research.languages.base.BinaryExpression
 
 auxiliary {
 	superclasses(Class cl) : List<Class>
@@ -89,6 +90,14 @@ axiom TypeOfBooleanLiteral
 	G |- BooleanLiteral bool : BaseFactory.eINSTANCE.createBooleanType
 axiom TypeOfStringLiteral 
 	G |- StringLiteral num : BaseFactory.eINSTANCE.createStringType
+	
+rule TypeOfBinaryExpression
+	G |- BinaryExpression bin : TypeRef type
+from {
+	G |- bin.receiver : type 
+	// por ahora solo toma el del receiver. Quizas habría que tener una regla más elaborada
+	// para operar sobre elementos de distinto tipo
+}
 
 // *************************************
 // ** RULES
