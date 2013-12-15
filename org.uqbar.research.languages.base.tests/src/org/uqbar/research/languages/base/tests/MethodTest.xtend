@@ -69,4 +69,67 @@ class MethodTest {
 			.assertErrorsFound(1)
 	}
 	
+	// migrados de BaseTest
+	
+		@Test
+	def void testSimpleMethodCallOnThisWithoutParameters() {
+		'''
+		class Example {
+			def simpleMethod : Unit = {
+				//.. algo
+			}
+			def caller : Unit = {
+				this.simpleMethod
+			}
+		}
+		'''	.parseExpectingNoErrors
+	}
+	
+	@Test
+	def void testSimpleMethodCallOnParameterWithoutParameters() {
+		'''
+		class Example {
+			def simpleMethod : Unit = {
+			}
+			
+			def sendMessageToP(p : Example) : Unit = {
+				p.simpleMethod
+			}
+		}
+		'''	.parseExpectingNoErrors
+	}
+	
+	@Test
+	def void testMethodCallOnThisWithSingleParameterAndExactlySameConcreteClass() {
+		'''
+		class Persona
+		
+		class Patova {
+			def cacheaA(p : Persona) : Unit = {
+				// algo
+			}
+			def hacer : Unit = {
+				this.cacheaA(new Persona)
+			}
+		}
+		'''	.parseExpectingNoErrors
+	}
+	
+	@Test
+	def void testMethodCallOnThisWithSingleParameterAndSubtypeArgument() {
+		'''
+		class Persona
+		class VIP extends Persona
+		
+		class Patova {
+			def cacheaA(p : Persona) : Unit = {
+				// algo
+			}
+			def hacer : Unit = {
+				this.cacheaA(new VIP)
+			}
+		}
+		'''	.parseExpectingNoErrors
+	}
+	
 }
