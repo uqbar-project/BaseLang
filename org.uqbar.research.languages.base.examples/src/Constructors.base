@@ -1,0 +1,11 @@
+class Programa {
+	var horaInicio : Int
+	var duracion : Int
+	var nombre : String
+}
+
+class Emisora {
+	def crearPrograma(nombre : String) : Programa = {
+		new Programa(nombre = nombre, duracion = 1)
+	}
+}

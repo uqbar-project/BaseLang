@@ -3,19 +3,21 @@ package org.uqbar.research.languages.scoping
 import com.google.inject.Inject
 import it.xsemantics.runtime.RuleEnvironment
 import it.xsemantics.runtime.RuleFailedException
+import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EReference
 import org.eclipse.xtext.scoping.IScope
 import org.eclipse.xtext.scoping.Scopes
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider
+import org.uqbar.research.languages.base.Assignment
 import org.uqbar.research.languages.base.Class
+import org.uqbar.research.languages.base.ConstructorCallArg
 import org.uqbar.research.languages.base.Expression
 import org.uqbar.research.languages.base.Property
 import org.uqbar.research.languages.base.Reference
 import org.uqbar.research.languages.typing.BaseSemantics
 
 import static extension org.uqbar.research.languages.util.BaseTypeUtils.*
-import org.eclipse.emf.ecore.EObject
-import org.uqbar.research.languages.base.Assignment
+import org.uqbar.research.languages.base.ConstructorCall
 
 /**
  * This class contains custom scoping description.
@@ -36,8 +38,10 @@ class BaseScopeProvider extends AbstractDeclarativeScopeProvider {
 		assignment.containingClass.allProperties.asScope
 	}
 	
-
-
+	def IScope scope_ConstructorCallArg_property(ConstructorCallArg context, EReference reference) {
+		context.container(ConstructorCall).classRef.ref.allProperties.asScope
+	}
+	
 	// *****************************
 	// ** Helpers
 	// *****************************

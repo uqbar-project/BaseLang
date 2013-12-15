@@ -18,6 +18,10 @@ class BaseTypeUtils {
 	static def getContainingClass(EObject expression) {
 		EcoreUtil2.getContainerOfType(expression, Class)
 	}
+	
+	static def <T extends EObject> container(EObject expression, java.lang.Class<T> containerType) {
+		EcoreUtil2.getContainerOfType(expression, containerType) as T 
+	}
 
 	static def getContainingMethod(Expression expression) {
 		EcoreUtil2.getContainerOfType(expression, Method)
