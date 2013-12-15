@@ -9,7 +9,8 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	BaseTest.class,
-	ConstructorsTest.class
+	ConstructorsTest.class,
+	MethodTest.class
 })
 public class BaseAllTests {
 

@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import org.eclipse.xtext.junit4.InjectWith
 import org.eclipse.xtext.junit4.XtextRunner
 import org.eclipse.xtext.junit4.util.ParseHelper
-import org.eclipse.xtext.junit4.validation.ValidationTestHelper
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.uqbar.research.languages.BaseInjectorProvider
@@ -14,7 +13,6 @@ import org.uqbar.research.languages.base.Program
 @RunWith(XtextRunner)
 class ConstructorsTest {
 	@Inject extension ParseHelper<Program> parser
-	@Inject extension ValidationTestHelper
 	@Inject extension TestHelpers
 	
 	@Test
