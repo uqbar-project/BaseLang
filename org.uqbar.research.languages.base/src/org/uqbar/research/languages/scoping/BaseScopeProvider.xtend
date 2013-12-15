@@ -18,6 +18,9 @@ import org.uqbar.research.languages.typing.BaseSemantics
 
 import static extension org.uqbar.research.languages.util.BaseTypeUtils.*
 import org.uqbar.research.languages.base.ConstructorCall
+import org.uqbar.research.languages.base.MessageSend
+import org.uqbar.research.languages.base.Selector
+import org.uqbar.research.languages.base.ClassRef
 
 /**
  * This class contains custom scoping description.
@@ -27,8 +30,7 @@ import org.uqbar.research.languages.base.ConstructorCall
  *
  */
 class BaseScopeProvider extends AbstractDeclarativeScopeProvider {
-	@Inject
-	BaseSemantics semantics
+	@Inject extension BaseSemantics semantics
 
 	def IScope scope_Referenciable(Reference reference, EReference ref) {
 		reference.containingClass.allProperties.asScope + reference.containingMethod.formals.asScope
@@ -40,6 +42,14 @@ class BaseScopeProvider extends AbstractDeclarativeScopeProvider {
 	
 	def IScope scope_ConstructorCallArg_property(ConstructorCallArg context, EReference reference) {
 		context.container(ConstructorCall).classRef.ref.allProperties.asScope
+	}
+	
+	def IScope scope_Selector_ref(Selector selector, EReference reference) {
+		var typeOfReceiver = typeExpression(selector.container(MessageSend).receiver)
+		if (typeOfReceiver.failed)
+			IScope.NULLSCOPE
+		else
+			(typeOfReceiver.first as ClassRef).ref.methods.asScope
 	}
 	
 	// *****************************
@@ -90,5 +100,9 @@ class BaseScopeProvider extends AbstractDeclarativeScopeProvider {
 	
 	def asScope(Iterable<? extends EObject> elements) {
 		Scopes.scopeFor(elements)
+	}
+	
+	def asScope(EObject justOne) {
+		#[justOne].asScope
 	}
 }
