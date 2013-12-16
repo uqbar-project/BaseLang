@@ -88,4 +88,71 @@ class ConstructorsTest {
 		'''.parseExpectingNoErrors
 	}
 	
+	@Test
+	def void testConstructorCallTypesCompatibilityWithPrimitiveTypes() {
+		'''
+			class Programa {
+					var duracion : Int
+					var nombre : String
+			}
+			
+			class Emisora {
+				def crearPrograma(nombre : String) : Programa = {
+					new Programa(nombre = nombre, duracion = 21)
+				}
+			}
+		'''.parseExpectingNoErrors
+	}
+	
+	@Test
+	def void testConstructorCallTypesCompatibilityWithPrimitiveTypesAndInvalidType() {
+		'''
+			class Programa {
+					var duracion : Int
+					var nombre : String
+			}
+			
+			class Emisora {
+				def crearPrograma(nombre : String) : Programa = {
+					new Programa(nombre = nombre, duracion = "Hola Mundo")
+				}
+			}
+		'''.parse
+			.assertErrorsFound(1)
+	}
+	
+	@Test
+	def void testConstructorCallTypesCompatibilityWithComplexType() {
+		'''
+			class Conductor
+			class Programa {
+					var conductor : Conductor
+			}
+			
+			class Emisora {
+				def crearPrograma(nombre : String, c : Conductor) : Programa = {
+					new Programa(conductor = c)
+				}
+			}
+		'''.parseExpectingNoErrors
+	}
+	
+		@Test
+	def void testConstructorCallTypesCompatibilityWithComplexTypeAndSubtype() {
+		'''
+			class Persona
+			class Periodista extends Persona
+			class Programa {
+					var conductor : Persona
+			}
+			
+			class Emisora {
+				def crearPrograma(nombre : String, periodista : Periodista) : Programa = {
+					new Programa(conductor = periodista)
+				}
+			}
+		'''.parseExpectingNoErrors
+	}
+
+	
 }

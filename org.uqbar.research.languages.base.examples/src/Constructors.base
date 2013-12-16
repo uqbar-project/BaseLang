@@ -10,7 +10,7 @@ class Programa {
 
 class Emisora {
 	def crearPrograma(nombre : String) : Programa = {
-		new Programa(nombre = nombre, duracion = 1)
+		new Programa(nombre = nombre, duracion = 21)
 	}
 	
 	def transmitir(programa : Programa) : Unit = {

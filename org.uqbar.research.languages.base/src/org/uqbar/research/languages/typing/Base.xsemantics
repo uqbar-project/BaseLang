@@ -39,7 +39,7 @@ auxiliary {
 judgments {
 	typeExpression |- Expression e : output TypeRef
 		error "Cannot type expression " + e.stringRep
-	assignableType ||- Referenciable referenciable: output TypeRef
+	assignableType ||- Referenciable referenciable : output TypeRef
 		error "Cannot compute the type of variable " + referenciable.stringRep
 		source referenciable
 	subtype |- TypeRef subtype <: TypeRef supertype
@@ -54,22 +54,14 @@ judgments {
 
 // *************************************
 // ** Auxiliary definitions
-// ************************************* 
-
+// *************************************
+ 
 auxiliary superclasses(Class cl) {
-	getAll(cl,
-		BasePackage.eINSTANCE.class_Parent,
-		BasePackage.eINSTANCE.class_Parent,
-		Class
-	)
+	getAll(cl, BasePackage.eINSTANCE.class_Parent, BasePackage.eINSTANCE.class_Parent, Class )
 }
 
 auxiliary allProperties(Class clazz) {
-	getAll(clazz,
-		BasePackage.eINSTANCE.class_Properties,
-		BasePackage.eINSTANCE.class_Parent,
-		Property
-	)
+	getAll(clazz, BasePackage.eINSTANCE.class_Properties, BasePackage.eINSTANCE.class_Parent, Property)
 }
 
 auxiliary methods(Class clazz) {
@@ -115,10 +107,13 @@ from {
 }
 
 
-rule ConstructorCallType
+rule TypeOfConstructorCall
 	G |- ConstructorCall call : call.classRef
 from {
 	call.classRef != null
+	for (arg : call.args) {
+		G |- arg.value <| arg.property.type
+	}
 }
 
 
