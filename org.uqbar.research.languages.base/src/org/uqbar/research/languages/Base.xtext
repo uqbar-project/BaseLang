@@ -95,11 +95,15 @@ BlockLiteral:
  // ****************************************************************************
 
 TypeRef:
+	BasicType |
+	ClassRef;
+
+BasicType:
 	{IntType} 'Int' |
 	{StringType} 'String' |
 	{BooleanType} 'Boolean' |
-	{UnitTypeRef} 'Unit' |
-	ClassRef;
+	{UnitTypeRef} 'Unit'
+;
 
 ClassRef:
 	ref=[Class];

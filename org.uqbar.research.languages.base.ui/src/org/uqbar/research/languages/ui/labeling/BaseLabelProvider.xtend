@@ -4,17 +4,59 @@
 package org.uqbar.research.languages.ui.labeling
 
 import com.google.inject.Inject
+import java.util.ListIterator
+import org.eclipse.emf.common.util.EList
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
+import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
+import org.uqbar.research.languages.base.Method
+import org.uqbar.research.languages.base.Property
+import org.uqbar.research.languages.base.Formal
+import org.uqbar.research.languages.base.TypeRef
+import org.uqbar.research.languages.base.ClassRef
+import org.uqbar.research.languages.base.BasicType
+import org.uqbar.research.languages.base.Assignable
 
 /**
  * Provides labels for a EObjects.
  * 
  * see http://www.eclipse.org/Xtext/documentation.html#labelProvider
  */
-class BaseLabelProvider extends org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider {
+class BaseLabelProvider extends DefaultEObjectLabelProvider {
 
 	@Inject
-	new(org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider delegate) {
+	new(AdapterFactoryLabelProvider delegate) {
 		super(delegate);
+	}
+	
+	def String text(Assignable a) {
+		a.name + " : " + getText(a.type)
+	}
+	
+	def String text(Method m) {
+		m.name + "(" + listToText(m.formals) + ") : " + getText(m.type)
+	}
+	
+	def String text(ClassRef t) {
+		getText(t.ref)
+	}
+	
+	def String text(BasicType t) {
+		t.eClass.name
+	}
+	
+	def text(org.uqbar.research.languages.base.Class c) {
+		c.name
+	}
+	
+	def String listToText(EList<Formal> list) {
+		val buffer = new StringBuffer
+		val ite = list.listIterator
+		while (ite.hasNext) {
+			buffer.append(text(ite.next))
+			if (ite.hasNext)
+				buffer.append(", ")
+		}
+		return buffer.toString
 	}
 
 	// Labels and icons can be computed like this:

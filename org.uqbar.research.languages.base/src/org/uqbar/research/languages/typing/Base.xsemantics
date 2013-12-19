@@ -96,8 +96,11 @@ from {
 // *************************************
 	
 
-axiom AssignableType
-	G ||- Assignable assignable : assignable.type
+rule AssignableType
+	G ||- Assignable assignable : TypeRef type
+from {
+	type = assignable.type
+}
 
 rule ExpressionAssignableToType
 	G |- Expression expression <| TypeRef right
@@ -208,7 +211,8 @@ from {
 checkrule CheckPropertyTypeCannotBeUnit for
 	Property p
 from {
-	if (p.type instanceof UnitTypeRef) { fail error "Property type cannot be Unit" source p.type }
+	empty ||- p : var TypeRef type
+	if (type instanceof UnitTypeRef) { fail error "Property type cannot be Unit" source type }
 }
 
 checkrule CheckPropertyValueType for

@@ -8,7 +8,7 @@ import org.uqbar.research.languages.base.Method
 import org.eclipse.emf.ecore.EObject
 
 class BaseTypeUtils {
-
+	
 	static def asRef(Class cl) {
 		var type = BaseFactory.eINSTANCE.createClassRef()
 		type.ref = cl

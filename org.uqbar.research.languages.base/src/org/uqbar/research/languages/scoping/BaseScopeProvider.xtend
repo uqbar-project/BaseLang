@@ -105,4 +105,10 @@ class BaseScopeProvider extends AbstractDeclarativeScopeProvider {
 	def asScope(EObject justOne) {
 		#[justOne].asScope
 	}
+
+
+
+def saldoInsuficiente(int saldoActual, int requerido) { '''Saldo insuficiente, tiene «saldoActual», pero requiere «requerido»''' } 
+
+
 }
